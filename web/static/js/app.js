@@ -19,7 +19,7 @@ function drawBoard(ctx, state) {
   let colors = ['#ffcc00', '#00ffcc', '#ff00cc', '#ffccff'];
   
   ctx.fillStyle = '#ffffff';
-  ctx.fill();
+  ctx.clearRect(0, 0, 800, 600);
 
   ctx.lineWidth = 5;
   
@@ -41,21 +41,15 @@ function drawBoard(ctx, state) {
 function setupGame(boardId) {
 
   var boardState = {};
-  boardState[playerId] = [];
 
   // socket stuff
   let socket = new Socket("/socket", {params: {id: playerId}});
   socket.connect();
 
-
-  // Now that you are connected, you can join channels with a topic:
-  let channel = socket.channel("boards:" + boardId, {});
-
   let canvas = document.querySelector('#canvas');
   let ctx = canvas.getContext('2d');
   let draw = () => drawBoard(ctx, boardState);
   let coord = (e) => [e.offsetX, e.offsetY];
-  draw();
 
   let addNewLine = (playerId, c) => {
     if (!boardState[playerId])
@@ -68,15 +62,20 @@ function setupGame(boardId) {
     boardState[playerId][boardState[playerId].length-1].push(c);
   };
   
+  let channel = socket.channel("boards:" + boardId, {});
+
   channel.join()
     .receive("ok", resp => {
       console.log("Joined successfully", resp);
-      channel.push("get_state").receive("ok", (s) => {
-        boardState = s;
-        draw();
-      });
     })
     .receive("error", resp => { console.log("Unable to join", resp); });
+
+  channel
+    .on("state", state => {
+      console.log('state!', state);
+      boardState = state;
+      draw();
+    });
 
   channel
     .on("new", payload => {
@@ -116,6 +115,8 @@ function setupGame(boardId) {
     drawing = false;
   });
 
+  draw();
+  
 }
 
 let boardId = document.querySelector("#board").getAttribute("data-board-id");

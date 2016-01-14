@@ -21,7 +21,10 @@ end
 
 defmodule Scribble.Board do
   def start_link(boardId) do
-    Agent.start_link(fn -> %{} end, name: boardId)
+    result = Agent.start_link(fn -> %{} end, name: boardId)
+    # send state to all connected players
+    Scribble.Endpoint.broadcast("boards:" <> Atom.to_string(boardId), "state", %{})
+    result
   end
 
   def get_state(name) do
