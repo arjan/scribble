@@ -17,7 +17,7 @@ defmodule Scribble.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {Scribble, []},
-     applications: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext]]
+     applications: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext, :sasl]]
   end
 
   # Specifies which paths to compile per environment.
