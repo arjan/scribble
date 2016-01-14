@@ -84,4 +84,5 @@ body {
 canvas {
     background-color: white;
     border: 4px solid grey;
+    cursor: crosshair;
 }

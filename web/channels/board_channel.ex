@@ -18,13 +18,11 @@ defmodule Scribble.BoardChannel do
 
   def handle_in("new", %{"coord" => coord} = payload, socket) do
     state = Scribble.Board.new_line(socket.assigns.board, socket.assigns.id, coord)
-    Logger.debug "New stroke"
     broadcast socket, "new", Map.put(payload, :player, socket.assigns.id)
     {:noreply, socket}
   end
 
   def handle_in("add", %{"coord" => coord} = payload, socket) do
-    Logger.debug "Add to last stroke"
     state = Scribble.Board.add_to_line(socket.assigns.board, socket.assigns.id, coord)
     broadcast socket, "add", Map.put(payload, :player, socket.assigns.id)
     {:noreply, socket}
