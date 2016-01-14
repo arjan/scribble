@@ -11,19 +11,19 @@ defmodule Scribble.BoardChannel do
     end
   end
 
-  def handle_in("get_state", payload, socket) do
+  def handle_in("get_state", _payload, socket) do
     state = Scribble.Board.get_state(socket.assigns.board)
     {:reply, {:ok, state}, socket}
   end
 
   def handle_in("new", %{"coord" => coord} = payload, socket) do
-    state = Scribble.Board.new_line(socket.assigns.board, socket.assigns.id, coord)
+    Scribble.Board.new_line(socket.assigns.board, socket.assigns.id, coord)
     broadcast socket, "new", Map.put(payload, :player, socket.assigns.id)
     {:noreply, socket}
   end
 
   def handle_in("add", %{"coord" => coord} = payload, socket) do
-    state = Scribble.Board.add_to_line(socket.assigns.board, socket.assigns.id, coord)
+    Scribble.Board.add_to_line(socket.assigns.board, socket.assigns.id, coord)
     broadcast socket, "add", Map.put(payload, :player, socket.assigns.id)
     {:noreply, socket}
   end
@@ -34,7 +34,7 @@ defmodule Scribble.BoardChannel do
   end
 
   def handle_info(:after_join, socket) do
-    broadcast socket, "state", Scribble.Board.get_state(socket.assigns.board) 
+    push socket, "state", Scribble.Board.get_state(socket.assigns.board) 
     {:noreply, socket}
   end
 
