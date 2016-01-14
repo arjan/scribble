@@ -1,21 +1,122 @@
-// Brunch automatically concatenates all files in your
-// watched paths. Those paths can be configured at
-// config.paths.watched in "brunch-config.js".
-//
-// However, those files will only be executed if
-// explicitly imported. The only exception are files
-// in vendor, which are never wrapped in imports and
-// therefore are always executed.
 
-// Import dependencies
-//
-// If you no longer want to use a dependency, remember
-// to also remove its path from "config.paths.watched".
-import "phoenix_html"
+import "phoenix_html";
+import {Socket} from "phoenix";
 
-// Import local files
-//
-// Local files can be imported directly using relative
-// paths "./socket" or full ones "web/static/js/socket".
 
-// import socket from "./socket"
+// make sure we have a player id
+if (!localStorage.playerId) {
+  localStorage.playerId = ('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = crypto.getRandomValues(new Uint8Array(1))[0]%16|0, v = c == 'x' ? r : (r&0x3|0x8);
+    return v.toString(16);
+  }));
+}
+let playerId = localStorage.playerId;
+
+
+// state is an object with 'strokes'; each stroke contains:
+// {playerId: {points: [[x,y],..], color: '#ffcccc'}}
+function drawBoard(ctx, state) {
+  let colors = ['#ffcc00', '#00ffcc', '#ff00cc', '#ffccff'];
+  
+  ctx.fillStyle = '#ffffff';
+  ctx.fill();
+
+  ctx.lineWidth = 5;
+  
+  var p = 0;
+  for (var playerId in state) {
+    let strokes = state[playerId];
+    strokes.forEach(coordinates => {
+      if (!coordinates.length) return;
+      ctx.strokeStyle = colors[p % colors.length];
+      ctx.beginPath();
+      ctx.moveTo(coordinates[0][0], coordinates[0][1]);
+      coordinates.forEach(point => ctx.lineTo(point[0], point[1]));
+      ctx.stroke();
+    });
+    p++;
+  }
+}
+
+function setupGame(boardId) {
+
+  var boardState = {};
+  boardState[playerId] = [];
+
+  // socket stuff
+  let socket = new Socket("/socket", {params: {id: playerId}});
+  socket.connect();
+
+
+  // Now that you are connected, you can join channels with a topic:
+  let channel = socket.channel("boards:" + boardId, {});
+
+  let canvas = document.querySelector('#canvas');
+  let ctx = canvas.getContext('2d');
+  let draw = () => drawBoard(ctx, boardState);
+  let coord = (e) => [e.offsetX, e.offsetY];
+  draw();
+
+  let addNewLine = (playerId, c) => {
+    if (!boardState[playerId])
+      boardState[playerId] = [];
+    boardState[playerId].push([c]);
+  };
+  let addToLine = (playerId, c) => {
+    if (!boardState[playerId])
+      boardState[playerId] = [[]];
+    boardState[playerId][boardState[playerId].length-1].push(c);
+  };
+  
+  channel.join()
+    .receive("ok", resp => {
+      console.log("Joined successfully", resp);
+      channel.push("get_state").receive("ok", (s) => {
+        boardState = s;
+        draw();
+      });
+    })
+    .receive("error", resp => { console.log("Unable to join", resp); });
+
+  channel
+    .on("new", payload => {
+      if (payload.player == playerId) return;
+      addNewLine(payload.playerId, payload.coord);
+      draw();
+    });
+
+  channel
+    .on("add", payload => {
+      if (payload.player == playerId) return;
+      addToLine(payload.playerId, payload.coord);
+      draw();
+    });
+  
+  
+  // set up drawing listeners
+  var drawing = false;
+
+  // add new line
+  canvas.addEventListener('mousedown', (e) => {
+    addNewLine(playerId, coord(e));
+    drawing = true;
+    channel.push("new", {coord: coord(e)});
+  });
+
+  // add to existing line
+  canvas.addEventListener('mousemove', (e) => {
+    if (!drawing) return;
+    addToLine(playerId, coord(e));
+    draw();
+    channel.push("add", {coord: coord(e)});
+  });
+
+  // stop drawing
+  canvas.addEventListener('mouseup', (e) => {
+    drawing = false;
+  });
+
+}
+
+let boardId = document.querySelector("#board").getAttribute("data-board-id");
+if (boardId) setupGame(boardId);

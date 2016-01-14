@@ -2,7 +2,7 @@ defmodule Scribble.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "rooms:*", Scribble.RoomChannel
+  channel "boards:*", Scribble.BoardChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
@@ -19,8 +19,8 @@ defmodule Scribble.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(_params, socket) do
-    {:ok, socket}
+  def connect(%{"id" => id}, socket) do
+    {:ok, assign(socket, :id, id)}
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:

@@ -4,7 +4,7 @@ defmodule Scribble.IdServer do
   end
 
   def next do
-    Agent.get_and_update(__MODULE__, &({&1, &1+1}))
+    Agent.get_and_update(__MODULE__, &({String.to_atom("board" <> Integer.to_string(&1)), &1+1}))
   end
 
 end

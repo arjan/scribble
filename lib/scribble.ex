@@ -10,6 +10,7 @@ defmodule Scribble do
       # Start the endpoint when the application starts
       supervisor(Scribble.Endpoint, []),
       # Here you could define other workers and supervisors as children
+      supervisor(Scribble.BoardSupervisor, []),
       worker(Scribble.IdServer, []),
     ]
 
@@ -26,3 +27,5 @@ defmodule Scribble do
     :ok
   end
 end
+
+
