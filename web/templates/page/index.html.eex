@@ -1,0 +1,6 @@
+<div class="jumbotron">
+    <h2>Scribble</h2>
+    <p>Click the button to start a new board</p>
+    <p>
+        <a href="/new" class="btn btn-primary btn-lg">New</a>
+</div>
