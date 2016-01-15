@@ -105,9 +105,13 @@ function setupGame(boardId) {
     channel.push("new", {coord: coord(e)});
   });
   canvas.addEventListener('touchstart', (e) => {
-    addNewLine(playerId, coord(e));
+    const coord = [
+      event.targetTouches[0].pageX - e.target.offsetLeft,
+      event.targetTouches[0].pageY - e.target.offsetTop
+    ]
+    addNewLine(playerId, coord);
     drawing = true;
-    channel.push("new", {coord: coord(e)});
+    channel.push("new", {coord: coord});
   });
 
   // add to existing line
@@ -119,9 +123,13 @@ function setupGame(boardId) {
   });
   canvas.addEventListener('touchmove', (e) => {
     if (!drawing) return;
-    addToLine(playerId, coord(e));
+    const coord = [
+      event.targetTouches[0].pageX - e.target.offsetLeft,
+      event.targetTouches[0].pageY - e.target.offsetTop
+    ]
+    addToLine(playerId, coord);
     draw();
-    channel.push("add", {coord: coord(e)});
+    channel.push("add", {coord: coord});
   });
 
   // stop drawing
