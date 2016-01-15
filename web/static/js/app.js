@@ -17,12 +17,12 @@ let playerId = localStorage.playerId;
 // {playerId: {points: [[x,y],..], color: '#ffcccc'}}
 function drawBoard(ctx, state) {
   let colors = ['#ffcc00', '#00ffcc', '#ff00cc', '#ffccff'];
-  
+
   ctx.fillStyle = '#ffffff';
   ctx.clearRect(0, 0, 800, 600);
 
   ctx.lineWidth = 5;
-  
+
   var p = 0;
   for (var playerId in state) {
     let strokes = state[playerId];
@@ -61,7 +61,7 @@ function setupGame(boardId) {
       boardState[playerId] = [[]];
     boardState[playerId][boardState[playerId].length-1].push(c);
   };
-  
+
   let channel = socket.channel("boards:" + boardId, {});
 
   channel.join()
@@ -90,13 +90,18 @@ function setupGame(boardId) {
       addToLine(payload.playerId, payload.coord);
       draw();
     });
-  
-  
+
+
   // set up drawing listeners
   var drawing = false;
 
   // add new line
   canvas.addEventListener('mousedown', (e) => {
+    addNewLine(playerId, coord(e));
+    drawing = true;
+    channel.push("new", {coord: coord(e)});
+  });
+  canvas.addEventListener('touchstart', (e) => {
     addNewLine(playerId, coord(e));
     drawing = true;
     channel.push("new", {coord: coord(e)});
@@ -109,14 +114,23 @@ function setupGame(boardId) {
     draw();
     channel.push("add", {coord: coord(e)});
   });
+  canvas.addEventListener('touchmove', (e) => {
+    if (!drawing) return;
+    addToLine(playerId, coord(e));
+    draw();
+    channel.push("add", {coord: coord(e)});
+  });
 
   // stop drawing
   canvas.addEventListener('mouseup', (e) => {
     drawing = false;
   });
+  canvas.addEventListener('touchend', (e) => {
+    drawing = false;
+  });
 
   draw();
-  
+
 }
 
 let boardId = document.querySelector("#board").getAttribute("data-board-id");
