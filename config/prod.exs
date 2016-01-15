@@ -13,7 +13,7 @@ use Mix.Config
 # which you typically run after static files are built.
 config :scribble, Scribble.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [host: "scribble.qraft.nl"],
+  url: [host: System.get_env("HOST")],
   cache_static_manifest: "priv/static/manifest.json"
 
 # Do not print debug messages in production
