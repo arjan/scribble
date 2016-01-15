@@ -2,7 +2,12 @@ defmodule Scribble.PageController do
   use Scribble.Web, :controller
 
   def index(conn, _params) do
-    render conn, "index.html"
+
+    boards = for {_, pid, _, [Scribble.Board]} <- Supervisor.which_children(Scribble.BoardSupervisor) do
+      Scribble.Board.get_metadata(pid)
+    end |> Enum.sort(&(&1.modified > &2.modified))
+    
+    render conn, "index.html", boards: boards
   end
 
   def new(conn, _params) do

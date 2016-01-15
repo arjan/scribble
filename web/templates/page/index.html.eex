@@ -3,4 +3,15 @@
     <p>Click the button to start a new board</p>
     <p>
         <a href="/new" class="btn btn-primary btn-lg">New</a>
+    </p>
+</div>
+
+<div class="row">
+    <%= for board <- assigns.boards do %>
+        <div class="col-xs-6 col-md-3">
+            <a href="/board/<%= board.id %>" class="thumbnail">
+                <img src="<%= board.image %>" />
+            </a>
+        </div>
+    <% end %>
 </div>
