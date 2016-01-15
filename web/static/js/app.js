@@ -50,16 +50,19 @@ function setupGame(boardId) {
   let ctx = canvas.getContext('2d');
   let draw = () => drawBoard(ctx, boardState);
   let coord = (e) => [e.offsetX, e.offsetY];
+  var dirty = false;
 
   let addNewLine = (playerId, c) => {
     if (!boardState[playerId])
       boardState[playerId] = [];
     boardState[playerId].push([c]);
+    dirty = true;
   };
   let addToLine = (playerId, c) => {
     if (!boardState[playerId])
       boardState[playerId] = [[]];
     boardState[playerId][boardState[playerId].length-1].push(c);
+    dirty = true;
   };
 
   let channel = socket.channel("boards:" + boardId, {});
@@ -131,6 +134,19 @@ function setupGame(boardId) {
 
   draw();
 
+  var thumbCanvas = document.createElement('canvas');
+  thumbCanvas.width = 300;
+  thumbCanvas.height = 225;
+  var thumbCtx = thumbCanvas.getContext("2d");
+
+  let snapshot = () => {
+    if (!dirty) return;
+    dirty = false;
+    thumbCtx.drawImage(canvas, 0, 0, 300, 225);
+    let image = thumbCanvas.toDataURL();
+    channel.push("snapshot", {image: image});
+  };
+  setInterval(snapshot, 1000);
 }
 
 let boardId = document.querySelector("#board").getAttribute("data-board-id");

@@ -1,5 +1,5 @@
 <div class="container" id="board" data-board-id="<%= assigns.id %>">
-    <h2>Scribble: <%= assigns.id %></h2>
+    <h2><a href="/">Scribble</a></h2>
 
     <canvas id="canvas" width="800" height="600"></canvas>
 </div>
