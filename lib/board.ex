@@ -8,28 +8,27 @@ defmodule Scribble.BoardSupervisor do
   def start_board(boardId) do
     Supervisor.start_child(__MODULE__, [boardId])
   end
-  
+
   def init(_) do
     children = [
       supervisor(Scribble.Board, [], restart: :transient)
     ]
     supervise(children, strategy: :simple_one_for_one)
   end
-  
+
 end
 
 
 defmodule Scribble.Board do
   use GenServer
-  use Timex
   require Logger
 
   @timeout 24 * 3600 * 1000 # 24 hours
-  
+
   defmodule State do
     defstruct id: nil, image: nil, lines: %{}, created: nil, modified: nil
   end
-  
+
   def start_link(boardId) do
     result = GenServer.start_link(__MODULE__, [boardId], name: boardId)
     # send state to all connected players
@@ -60,7 +59,7 @@ defmodule Scribble.Board do
   ###
 
   def init([id]) do
-    {:ok, %State{id: id, created: Date.now}, @timeout}
+    {:ok, %State{id: id, created: Timex.now}, @timeout}
   end
 
   def handle_call(:get_state, _from, state) do
@@ -88,13 +87,12 @@ defmodule Scribble.Board do
 
   def handle_call({:add_to_line, player_id, coord}, _from, state=%State{lines: lines}) do
     [last | rest] = lines[player_id]
-    {:reply, :ok, %State{state | lines: Map.put(lines, player_id, [ [coord | last] | rest]), modified: Date.now}, @timeout}
+    {:reply, :ok, %State{state | lines: Map.put(lines, player_id, [ [coord | last] | rest]), modified: Timex.now}, @timeout}
   end
 
   def handle_info(:timeout, state) do
     Logger.warn "Stopping board #{state.id} due to inactivity"
     {:stop, :normal, state}
   end
-  
-end
 
+end
