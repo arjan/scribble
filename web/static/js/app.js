@@ -1,7 +1,5 @@
-
 import "phoenix_html";
 import {Socket} from "phoenix";
-
 
 // make sure we have a player id
 if (!localStorage.playerId) {
@@ -12,11 +10,18 @@ if (!localStorage.playerId) {
 }
 let playerId = localStorage.playerId;
 
+function color(playerId) {
+  var colors = ['#ffcc00', '#00ffcc', '#ff00cc', '#ffccff'];
+  var p = 0;
+  for (var i = 0; i < playerId.length; i++) {
+    p += playerId.charCodeAt(i);
+  }
+  return colors[p % colors.length];
+}
 
 // state is an object with 'strokes'; each stroke contains:
 // {playerId: {points: [[x,y],..], color: '#ffcccc'}}
 function drawBoard(ctx, state) {
-  let colors = ['#ffcc00', '#00ffcc', '#ff00cc', '#ffccff'];
 
   ctx.fillStyle = '#ffffff';
   ctx.clearRect(0, 0, 800, 600);
@@ -28,7 +33,7 @@ function drawBoard(ctx, state) {
     let strokes = state[playerId];
     strokes.forEach(coordinates => {
       if (!coordinates.length) return;
-      ctx.strokeStyle = colors[p % colors.length];
+      ctx.strokeStyle = color(playerId);
       ctx.beginPath();
       ctx.moveTo(coordinates[0][0], coordinates[0][1]);
       coordinates.forEach(point => ctx.lineTo(point[0], point[1]));
@@ -75,7 +80,6 @@ function setupGame(boardId) {
 
   channel
     .on("state", state => {
-      console.log('state!', state);
       boardState = state;
       draw();
     });
@@ -83,14 +87,16 @@ function setupGame(boardId) {
   channel
     .on("new", payload => {
       if (payload.player == playerId) return;
-      addNewLine(payload.playerId, payload.coord);
+      addNewLine(payload.player, payload.coord);
       draw();
     });
 
   channel
     .on("add", payload => {
       if (payload.player == playerId) return;
-      addToLine(payload.playerId, payload.coord);
+      console.log("add", payload);
+
+      addToLine(payload.player, payload.coord);
       draw();
     });
 

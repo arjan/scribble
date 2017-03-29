@@ -30,10 +30,7 @@ defmodule Scribble.Board do
   end
 
   def start_link(boardId) do
-    result = GenServer.start_link(__MODULE__, [boardId], name: boardId)
-    # send state to all connected players
-    Scribble.Endpoint.broadcast("boards:" <> Atom.to_string(boardId), "state", %{})
-    result
+    GenServer.start_link(__MODULE__, [boardId], name: boardId)
   end
 
   def get_state(name) do
@@ -59,8 +56,12 @@ defmodule Scribble.Board do
   ###
 
   def init([id]) do
-    {:ok, %State{id: id, created: Timex.now}, @timeout}
+    # send state to all connected players
+    state = %State{id: id, created: Timex.now}
+    broadcast("state", %{}, state)
+    {:ok, state, @timeout}
   end
+
 
   def handle_call(:get_state, _from, state) do
     {:reply, state.lines, state, @timeout}
@@ -93,6 +94,10 @@ defmodule Scribble.Board do
   def handle_info(:timeout, state) do
     Logger.warn "Stopping board #{state.id} due to inactivity"
     {:stop, :normal, state}
+  end
+
+  defp broadcast(msg, payload, state) do
+    Scribble.Endpoint.broadcast("boards:" <> Atom.to_string(state.id), msg, payload)
   end
 
 end

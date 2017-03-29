@@ -3,15 +3,20 @@
     <h2>Scribble</h2>
     <p>Click the button to start a new board</p>
     <p>
-    <a href="/new" class="btn btn-primary btn-lg">New</a>
+      <a href="/new" class="btn btn-primary btn-lg">New</a>
     </p>
   </div>
 
-  <%= for board <- assigns.boards do %>
-    <div class="col-xs-6 col-md-3">
-      <a href="/board/<%= board.id %>" class="thumbnail">
-        <img src="<%= board.image %>" />
-      </a>
-    </div>
+  <%= if Enum.count(@boards) > 0 do %>
+    <p style="text-align: center">Or join one of the boards below:</p>
+
+    <%= for board <- @boards do %>
+      <div class="col-xs-6 col-md-3">
+        <a href="/board/<%= board.id %>" class="thumbnail">
+          <img src="<%= board.image %>" />
+        </a>
+      </div>
+    <% end %>
   <% end %>
+
 </div>

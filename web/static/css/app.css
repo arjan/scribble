@@ -86,3 +86,11 @@ canvas {
     border: 4px solid grey;
     cursor: crosshair;
 }
+
+a, a:visited, a:active {
+  color: #ffcc00;
+}
+
+h2 {
+  font-weight: bold;
+}
