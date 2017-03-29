@@ -35,6 +35,7 @@ defmodule Scribble.Mixfile do
      {:gettext, "~> 0.11"},
      {:timex, "~> 3.0"},
      {:cowboy, "~> 1.0"},
+     {:wobserver, "~> 0.1"},
      {:appsignal, "~> 0.0"}]
   end
 end

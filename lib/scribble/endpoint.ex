@@ -2,6 +2,7 @@ defmodule Scribble.Endpoint do
   use Phoenix.Endpoint, otp_app: :scribble
 
   socket "/socket", Scribble.UserSocket
+  socket "/wobserver", Wobserver.Web.PhoenixSocket
 
   # Serve at "/" the static files from "priv/static" directory.
   #

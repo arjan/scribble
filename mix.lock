@@ -22,4 +22,6 @@
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.1", "28a4d65b7f59893bc2c7de786dec1e1555bd742d336043fe644ae956c3497fbe", [:make, :rebar], []},
   "ssl_verify_hostname": {:hex, :ssl_verify_hostname, "1.0.5"},
   "timex": {:hex, :timex, "3.1.13", "48b33162e3ec33e9a08fb5f98e3f3c19c3e328dded3156096c1969b77d33eef0", [:mix], [{:combine, "~> 0.7", [hex: :combine, optional: false]}, {:gettext, "~> 0.10", [hex: :gettext, optional: false]}, {:tzdata, "~> 0.1.8 or ~> 0.5", [hex: :tzdata, optional: false]}]},
-  "tzdata": {:hex, :tzdata, "0.5.11", "3d5469a9f46bdf4a8760333dbdabdcc4751325035c454b10521f71e7c611ae50", [:mix], [{:hackney, "~> 1.0", [hex: :hackney, optional: false]}]}}
+  "tzdata": {:hex, :tzdata, "0.5.11", "3d5469a9f46bdf4a8760333dbdabdcc4751325035c454b10521f71e7c611ae50", [:mix], [{:hackney, "~> 1.0", [hex: :hackney, optional: false]}]},
+  "websocket_client": {:hex, :websocket_client, "1.2.1", "a965ce0be5583c90347400bceca66629e4debd5feb9bd516107e2924bdf39dad", [:rebar3], []},
+  "wobserver": {:hex, :wobserver, "0.1.7", "377b9a2903728b62e4e89d4e200ec17d60669ccdd3ed72b23a2ab3a2c079694d", [:mix], [{:cowboy, "~> 1.1", [hex: :cowboy, optional: false]}, {:httpoison, "~> 0.11", [hex: :httpoison, optional: false]}, {:plug, "~> 1.3", [hex: :plug, optional: false]}, {:poison, "~> 2.0 or ~> 3.0", [hex: :poison, optional: false]}, {:websocket_client, "~> 1.2", [hex: :websocket_client, optional: false]}]}}
