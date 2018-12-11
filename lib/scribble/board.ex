@@ -13,21 +13,18 @@ defmodule Scribble.BoardSupervisor do
     children = [
       supervisor(Scribble.Board, [], restart: :transient)
     ]
+
     supervise(children, strategy: :simple_one_for_one)
   end
-
 end
-
 
 defmodule Scribble.Board do
   use GenServer
   require Logger
+  alias Scribble.BoardState, as: State
 
-  @timeout 24 * 3600 * 1000 # 24 hours
-
-  defmodule State do
-    defstruct id: nil, image: nil, lines: %{}, created: nil, modified: nil
-  end
+  # 24 hours
+  @timeout 24 * 3600 * 1000
 
   def start_link(boardId) do
     GenServer.start_link(__MODULE__, [boardId], name: boardId)
@@ -57,11 +54,10 @@ defmodule Scribble.Board do
 
   def init([id]) do
     # send state to all connected players
-    state = %State{id: id, created: Timex.now}
+    state = %State{id: id, created: Timex.now()}
     broadcast("state", %{}, state)
     {:ok, state, @timeout}
   end
-
 
   def handle_call(:get_state, _from, state) do
     {:reply, state.lines, state, @timeout}
@@ -75,29 +71,20 @@ defmodule Scribble.Board do
     {:reply, :ok, %State{state | image: image}, @timeout}
   end
 
-  def handle_call({:new_line, player_id, coord}, _from, state=%State{lines: lines}) do
-    # make sure we have a coordinate
-    if lines[player_id] == nil do
-      lines = Map.put(lines, player_id, [])
-    end
-    player_lines = [[coord] | lines[player_id]]
-    new = %State{state | lines: Map.put(lines, player_id, player_lines)}
-
-    {:reply, :ok, new, @timeout}
+  def handle_call({:new_line, player_id, coord}, _from, state = %State{}) do
+    {:reply, :ok, State.new_line(player_id, coord, state), @timeout}
   end
 
-  def handle_call({:add_to_line, player_id, coord}, _from, state=%State{lines: lines}) do
-    [last | rest] = lines[player_id]
-    {:reply, :ok, %State{state | lines: Map.put(lines, player_id, [ [coord | last] | rest]), modified: Timex.now}, @timeout}
+  def handle_call({:add_to_line, player_id, coord}, _from, state = %State{}) do
+    {:reply, :ok, State.add_to_line(player_id, coord, state), @timeout}
   end
 
   def handle_info(:timeout, state) do
-    Logger.warn "Stopping board #{state.id} due to inactivity"
+    Logger.warn("Stopping board #{state.id} due to inactivity")
     {:stop, :normal, state}
   end
 
   defp broadcast(msg, payload, state) do
     Scribble.Endpoint.broadcast("boards:" <> Atom.to_string(state.id), msg, payload)
   end
-
 end
