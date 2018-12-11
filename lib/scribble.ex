@@ -11,7 +11,7 @@ defmodule Scribble do
       supervisor(Scribble.Endpoint, []),
       # Here you could define other workers and supervisors as children
       supervisor(Scribble.BoardSupervisor, []),
-      worker(Scribble.IdServer, []),
+      worker(Scribble.IdServer, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
@@ -27,5 +27,3 @@ defmodule Scribble do
     :ok
   end
 end
-
-

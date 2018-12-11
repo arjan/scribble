@@ -8,11 +8,11 @@ use Mix.Config
 # Configures the endpoint
 config :scribble, Scribble.Endpoint,
   url: [host: "localhost"],
+  http: [acceptors: 10],
   root: Path.dirname(__DIR__),
   secret_key_base: "rD7BvwEZM95Bx2GoaeTMkM7w/ZytHwNeOfp0ePe8T9RS076/TzwQhHHHtskXieyt",
   render_errors: [accepts: ~w(html json)],
-  pubsub: [name: Scribble.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Scribble.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -24,4 +24,4 @@ config :wobserver,
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"
