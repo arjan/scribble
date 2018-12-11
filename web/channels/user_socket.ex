@@ -2,10 +2,10 @@ defmodule Scribble.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "boards:*", Scribble.BoardChannel
+  channel("boards:*", Scribble.BoardChannel)
 
   ## Transports
-  transport :websocket, Phoenix.Transports.WebSocket
+  transport(:websocket, Phoenix.Transports.WebSocket, check_origin: false)
   # transport :longpoll, Phoenix.Transports.LongPoll
 
   # Socket params are passed from the client and can
