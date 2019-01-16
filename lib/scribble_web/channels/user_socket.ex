@@ -2,6 +2,7 @@ defmodule ScribbleWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
+  channel("boards", ScribbleWeb.BoardsChannel)
   channel("boards:*", ScribbleWeb.BoardChannel)
 
   # Socket params are passed from the client and can

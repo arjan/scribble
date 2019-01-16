@@ -36,6 +36,9 @@ defmodule Scribble.Board do
     # send state to all connected players
     state = %State{id: id, created: DateTime.utc_now()}
     broadcast("state", %{}, state)
+
+    {:ok, _} = ScribbleWeb.Presence.track(self(), "boards", to_string(id), %{id: id, image: nil})
+
     {:ok, state, @timeout}
   end
 
@@ -48,6 +51,11 @@ defmodule Scribble.Board do
   end
 
   def handle_call({:set_image, image}, _from, state) do
+    {:ok, _} =
+      ScribbleWeb.Presence.update(self(), "boards", to_string(state.id), fn meta ->
+        Map.put(meta, :image, image)
+      end)
+
     {:reply, :ok, %State{state | image: image}, @timeout}
   end
 
@@ -61,6 +69,11 @@ defmodule Scribble.Board do
 
   def handle_info(:timeout, state) do
     Logger.warn("Stopping board #{state.id} due to inactivity")
+    {:stop, :normal, state}
+  end
+
+  def handle_info(:stop, state) do
+    Logger.warn("Got :stop message")
     {:stop, :normal, state}
   end
 

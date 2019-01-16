@@ -1,0 +1,43 @@
+/* This file is for your main application css. */
+
+$color-primary: #660099;
+@import "../node_modules/milligram/src/milligram.sass";
+
+body {
+  margin: 0;
+  background: #f0f0f0;
+}
+
+header {
+  background: $color-primary;
+  a {
+    color: white;
+  }
+  padding: 8px 0;
+  h3 {
+    margin: 0;
+  }
+}
+
+.container {
+  text-align: center;
+}
+#board canvas {
+  background: white;
+  margin-top: 40px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  max-width: 100%;
+}
+
+div.boards {
+  display: block;
+
+  .board-thumb {
+    float: left;
+    background: white;
+    margin: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    width: 300px;
+    height: 225px;
+  }
+}

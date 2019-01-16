@@ -19,6 +19,12 @@ module.exports = (env, options) => ({
     filename: 'app.js',
     path: path.resolve(__dirname, '../priv/static/js')
   },
+  resolve: {
+    modules: [
+      path.resolve('./js'),
+      path.resolve('./node_modules')
+    ]
+  },
   module: {
     rules: [
       {
@@ -31,6 +37,10 @@ module.exports = (env, options) => ({
       {
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, 'css-loader']
+      },
+      {
+        test: /\.s[ca]ss$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
       }
     ]
   },

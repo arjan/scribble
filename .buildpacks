@@ -1,2 +1,2 @@
-https://github.com/HashNuke/heroku-buildpack-elixir
-https://github.com/gjaldon/phoenix-static-buildpack
+https://github.com/HashNuke/heroku-buildpack-elixir.git
+https://github.com/mlankenau/heroku-buildpack-phoenix-webpack.git

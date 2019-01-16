@@ -11,6 +11,7 @@ defmodule Scribble.Application do
     # List all child processes to be supervised
     children = [
       ScribbleWeb.Endpoint,
+      ScribbleWeb.Presence,
       IdServer,
       BoardSupervisor
     ]

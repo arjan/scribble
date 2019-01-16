@@ -1,9 +1,9 @@
-import { Socket } from "phoenix"
+import { Socket, Presence } from "phoenix"
 
 // We need to import the CSS so that webpack will load it.
 // The MiniCssExtractPlugin is used to separate it out into
 // its own CSS file.
-import css from "../css/app.css"
+import css from "../css/app.scss"
 
 // webpack automatically bundles all modules in your
 // entry points. Those entry points can be configured
@@ -60,9 +60,6 @@ function setupGame(boardId) {
   var boardState = {};
 
   // socket stuff
-  let socket = new Socket("/socket", {params: {id: playerId}});
-  socket.connect();
-
   let canvas = document.querySelector('#canvas');
   let ctx = canvas.getContext('2d');
   let draw = () => drawBoard(ctx, boardState);
@@ -175,5 +172,40 @@ function setupGame(boardId) {
   setInterval(snapshot, 1000);
 }
 
-let boardId = document.querySelector("#board").getAttribute("data-board-id");
-if (boardId) setupGame(boardId);
+function setupOverview() {
+  let channel = socket.channel("boards", {});
+
+  channel.join()
+         .receive("ok", resp => {
+           console.log("Joined overview successfully", resp);
+         })
+         .receive("error", resp => { console.log("Unable to join", resp); });
+
+  let presence = new Presence(channel)
+
+  presence.onSync(() => {
+    const boards = document.querySelector('.boards')
+    while (boards.firstChild) boards.removeChild(boards.firstChild)
+
+    presence.list((id, {metas: [first, ...rest]}) => {
+      const node = document.createElement('a')
+      node.className = 'board-thumb'
+      node.href = `/board/${id}`
+      if (first.image) {
+        node.innerHTML = `<img src="${first.image}">`
+      }
+      boards.appendChild(node)
+    })
+  })
+}
+
+let socket = new Socket("/socket", {params: {id: playerId}});
+socket.connect();
+
+if (document.querySelector("#board")) {
+  const boardId = document.querySelector("#board").dataset.boardId
+  setupGame(boardId)
+} else {
+  // main page, join the presence channel
+  setupOverview()
+}
