@@ -63,7 +63,10 @@ function setupGame(boardId) {
   let canvas = document.querySelector('#canvas');
   let ctx = canvas.getContext('2d');
   let draw = () => drawBoard(ctx, boardState);
-  let coord = (e) => [e.offsetX, e.offsetY];
+  let coord = ({ offsetX, offsetY }) => {
+    const scale = canvas.width / canvas.clientWidth
+    return [scale * offsetX, scale * offsetY]
+  };
   var dirty = false;
 
   let addNewLine = (playerId, c) => {
