@@ -1,33 +1,13 @@
-defmodule Scribble.BoardSupervisor do
-  use Supervisor
-
-  def start_link do
-    Supervisor.start_link(__MODULE__, [], name: __MODULE__)
-  end
-
-  def start_board(boardId) do
-    Supervisor.start_child(__MODULE__, [boardId])
-  end
-
-  def init(_) do
-    children = [
-      supervisor(Scribble.Board, [], restart: :transient)
-    ]
-
-    supervise(children, strategy: :simple_one_for_one)
-  end
-end
-
 defmodule Scribble.Board do
   use GenServer
   require Logger
-  alias Scribble.BoardState, as: State
+  alias Scribble.Board.State
 
   # 24 hours
   @timeout 24 * 3600 * 1000
 
-  def start_link(boardId) do
-    GenServer.start_link(__MODULE__, [boardId], name: boardId)
+  def start_link(board_id) do
+    GenServer.start_link(__MODULE__, [board_id], name: board_id)
   end
 
   def get_state(name) do
@@ -54,7 +34,7 @@ defmodule Scribble.Board do
 
   def init([id]) do
     # send state to all connected players
-    state = %State{id: id, created: Timex.now()}
+    state = %State{id: id, created: DateTime.utc_now()}
     broadcast("state", %{}, state)
     {:ok, state, @timeout}
   end
@@ -85,6 +65,6 @@ defmodule Scribble.Board do
   end
 
   defp broadcast(msg, payload, state) do
-    Scribble.Endpoint.broadcast("boards:" <> Atom.to_string(state.id), msg, payload)
+    ScribbleWeb.Endpoint.broadcast("boards:" <> Atom.to_string(state.id), msg, payload)
   end
 end

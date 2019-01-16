@@ -1,17 +1,19 @@
 # Scribble
 
-Example project accompanying the Amsterdam Elixir Meetup of January 14th, 2016.
+To start your Phoenix server:
 
-[View the presentation slides](https://docs.google.com/a/miraclethings.nl/presentation/d/1IrjgtPdzKZlMi3zCN9ET9MmWi4t9853fvT0LAvRjIuw/pub?start=false&loop=false&delayms=10000)
+  * Install dependencies with `mix deps.get`
+  * Install Node.js dependencies with `cd assets && npm install`
+  * Start Phoenix endpoint with `mix phx.server`
 
+Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
+Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
-To start this Phoenix app:
+## Learn more
 
-  1. Install dependencies with `mix deps.get`
-  2. Start Phoenix endpoint with `mix phoenix.server`
-
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser:
-
-![Index page](scribble.png)
-
+  * Official website: http://www.phoenixframework.org/
+  * Guides: https://hexdocs.pm/phoenix/overview.html
+  * Docs: https://hexdocs.pm/phoenix
+  * Mailing list: http://groups.google.com/group/phoenix-talk
+  * Source: https://github.com/phoenixframework/phoenix
