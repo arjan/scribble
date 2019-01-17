@@ -22,9 +22,21 @@ header {
 .container {
   text-align: center;
 }
+
+main .container {
+  padding: 0 10px;
+  position: relative;
+  margin-top: 40px;
+}
+
+@media(max-width: 480px) {
+  main .container {
+    margin-top: 0;
+  }
+}
+
 #board canvas {
   background: white;
-  margin-top: 40px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.3);
   max-width: 100%;
 }
@@ -39,5 +51,6 @@ div.boards {
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     width: 300px;
     height: 225px;
+    max-width: 82vw;
   }
 }

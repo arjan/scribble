@@ -116,6 +116,19 @@ function setupGame(boardId) {
   // set up drawing listeners
   var drawing = false;
 
+  const mobileCoord = (e) => {
+    const scale = canvas.width / canvas.clientWidth
+
+    // console.log('scale', scale)
+
+    const { left, top } = e.target.getBoundingClientRect()
+
+    return [
+      (e.targetTouches[0].pageX - left) * scale,
+      (e.targetTouches[0].pageY - top) * scale
+    ]
+  }
+
   // add new line
   canvas.addEventListener('mousedown', (e) => {
     addNewLine(playerId, coord(e));
@@ -123,13 +136,10 @@ function setupGame(boardId) {
     channel.push("new", {coord: coord(e)});
   });
   canvas.addEventListener('touchstart', (e) => {
-    const coord = [
-      event.targetTouches[0].pageX - e.target.offsetLeft,
-      event.targetTouches[0].pageY - e.target.offsetTop
-    ]
-    addNewLine(playerId, coord);
+    const coord =
+      addNewLine(playerId, mobileCoord(e));
     drawing = true;
-    channel.push("new", {coord: coord});
+    channel.push("new", {coord: mobileCoord(e)});
   });
 
   // add to existing line
@@ -141,13 +151,9 @@ function setupGame(boardId) {
   });
   canvas.addEventListener('touchmove', (e) => {
     if (!drawing) return;
-    const coord = [
-      event.targetTouches[0].pageX - e.target.offsetLeft,
-      event.targetTouches[0].pageY - e.target.offsetTop
-    ]
-    addToLine(playerId, coord);
+    addToLine(playerId, mobileCoord(e));
     draw();
-    channel.push("add", {coord: coord});
+    channel.push("add", {coord: mobileCoord(e)});
   });
 
   // stop drawing
