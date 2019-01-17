@@ -10,6 +10,7 @@ use Mix.Config
 # Configures the endpoint
 config :scribble, ScribbleWeb.Endpoint,
   url: [host: "localhost"],
+  http: [acceptors: 10],
   secret_key_base: "npIKRhgmcUDBOiFGCif8AgaoBphA3v4dlQE9xEDTVBE+uvvgEy70UD01qK/UJjuI",
   render_errors: [view: ScribbleWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Scribble.PubSub, adapter: Phoenix.PubSub.PG2]
