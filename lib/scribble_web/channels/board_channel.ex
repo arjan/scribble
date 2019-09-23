@@ -2,7 +2,7 @@ defmodule ScribbleWeb.BoardChannel do
   use ScribbleWeb, :channel
   require Logger
 
-  def join("boards:" <> id, payload, socket) do
+  def join("boards:" <> id, _payload, socket) do
     board = String.to_atom(id)
 
     case Process.whereis(board) do
@@ -10,7 +10,7 @@ defmodule ScribbleWeb.BoardChannel do
         {:error, %{reason: "Board not found"}}
 
       _ ->
-        send(self, :after_join)
+        send(self(), :after_join)
         {:ok, assign(socket, :board, board)}
     end
   end
@@ -32,7 +32,7 @@ defmodule ScribbleWeb.BoardChannel do
     {:noreply, socket}
   end
 
-  def handle_in("snapshot", %{"image" => image} = payload, socket) do
+  def handle_in("snapshot", %{"image" => image}, socket) do
     Scribble.Board.set_image(socket.assigns.board, image)
     {:noreply, socket}
   end

@@ -2,7 +2,7 @@ defmodule ScribbleWeb.BoardsChannel do
   use ScribbleWeb, :channel
   require Logger
 
-  def join("boards", payload, socket) do
+  def join("boards", _payload, socket) do
     Phoenix.PubSub.subscribe(Scribble.PubSub, "boards")
     send(self(), :after_join)
     {:ok, socket}
